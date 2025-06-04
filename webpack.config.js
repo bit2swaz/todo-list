@@ -7,6 +7,7 @@ module.exports = {
     filename: 'main.[contenthash].js',
     path: path.resolve(__dirname, 'dist'),
     clean: true,
+    publicPath: '/todo-list/'
   },
   module: {
     rules: [
