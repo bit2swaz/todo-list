@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>TodoList</h1>
+            </div>
+            <div class="projects-section">
+                <div class="projects-header">
+                    <h2>Projects</h2>
+                    <button id="new-project-btn" class="icon-btn" title="Add new project">+</button>
+                </div>
+                <ul id="projects-list" class="projects-list">
+                    <!-- Projects will be inserted here -->
+                </ul>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="content-header">
+                <h2 id="current-project-title">Inbox</h2>
+                <button id="new-todo-btn" class="primary-btn">
+                    <span>New Todo</span>
+                    <span class="plus-icon">+</span>
+                </button>
+            </header>
+
+            <div id="todos-container" class="todos-container">
+                <!-- Todos will be inserted here -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal template -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Add New Todo</h3>
+                <button id="close-modal" class="close-btn">&times;</button>
+            </div>
+            <div id="modal-body" class="modal-body">
+                <!-- Modal content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>made with ❤ by <a href="https://github.com/bit2swaz" target="_blank" rel="noopener noreferrer">bit2swaz</a></p>
+    </footer>
+</body>
+</html> 
