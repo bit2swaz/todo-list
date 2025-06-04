@@ -142,7 +142,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Fonts by [Google Fonts](https://fonts.google.com/)
 - Date handling by [date-fns](https://date-fns.org/)
 
-## 📞 Contact
+## ❤ Credits
 
 Created with ❤️ by [bit2swaz](https://github.com/bit2swaz)
 
