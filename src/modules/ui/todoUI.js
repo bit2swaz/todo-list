@@ -36,7 +36,7 @@ const TodoUI = {
                         <span class="todo-date ${dateClass}">${dateText}</span>
                     </div>
                 ` : ''}
-                <div class="todo-description" style="display: none;">
+                <div class="todo-description">
                     ${todo.description ? `<p>${todo.description}</p>` : ''}
                     ${todo.notes ? `<p class="todo-notes">${todo.notes}</p>` : ''}
                     ${this.renderChecklist(todo)}
@@ -70,12 +70,14 @@ const TodoUI = {
         const deleteBtn = todoElement.querySelector('.delete-btn');
         deleteBtn.addEventListener('click', () => onDelete(todo));
 
+        // Toggle description visibility
+        const description = todoElement.querySelector('.todo-description');
+        description.style.display = 'none';
+
         // Expand/collapse description
         todoElement.addEventListener('click', (e) => {
-            if (!e.target.closest('.todo-checkbox, .todo-action-btn')) {
-                const description = todoElement.querySelector('.todo-description');
+            if (!e.target.closest('.todo-checkbox, .todo-action-btn, .todo-checklist input[type="checkbox"]')) {
                 const isExpanded = description.style.display === 'block';
-                
                 description.style.display = isExpanded ? 'none' : 'block';
                 todoElement.classList.toggle('expanded', !isExpanded);
                 
@@ -112,7 +114,8 @@ const TodoUI = {
     attachChecklistHandlers(todoElement, todo) {
         const checklistItems = todoElement.querySelectorAll('.todo-checklist input[type="checkbox"]');
         checklistItems.forEach(checkbox => {
-            checkbox.addEventListener('change', () => {
+            checkbox.addEventListener('change', (e) => {
+                e.stopPropagation(); // Prevent event from bubbling up to todo item
                 const itemId = checkbox.dataset.checklistId;
                 todo.toggleChecklistItem(itemId);
                 checkbox.closest('li').classList.toggle('completed', checkbox.checked);
