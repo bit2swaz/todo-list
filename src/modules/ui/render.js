@@ -7,7 +7,7 @@ import { ProjectFactory } from '../project';
 
 const Render = {
     projects: [],
-    activeProjectId: 'inbox',
+    activeProjectId: null,
     
     init() {
         // Initialize UI components
@@ -15,7 +15,14 @@ const Render = {
         
         // Load data from storage
         this.projects = Storage.load();
-        this.activeProjectId = 'inbox';
+
+        // Add initial fade-in animation to app container
+        const appContainer = document.querySelector('.app');
+        appContainer.style.opacity = '0';
+        requestAnimationFrame(() => {
+            appContainer.classList.add('fade-in');
+            appContainer.style.opacity = '1';
+        });
 
         // Set up event listeners
         this.setupEventListeners();
@@ -26,7 +33,13 @@ const Render = {
 
     setupEventListeners() {
         // New Todo button
-        document.getElementById('new-todo-btn').addEventListener('click', () => {
+        const newTodoBtn = document.getElementById('new-todo-btn');
+        newTodoBtn.addEventListener('click', () => {
+            if (!this.activeProjectId) {
+                Modal.showToast('To add a todo, you must first create a project.', 'warning');
+                return;
+            }
+
             Modal.open(
                 'New Todo',
                 Modal.createTodoForm(),
@@ -86,9 +99,13 @@ const Render = {
                     );
                 },
                 onDelete: (project) => {
-                    if (confirm(`Are you sure you want to delete project "${project.name}" and all its todos?`)) {
-                        this.deleteProject(project.id);
-                    }
+                    Modal.showConfirm(
+                        'Delete Project',
+                        `Are you sure you want to delete project "${project.name}" and all its todos?`,
+                        () => {
+                            this.deleteProject(project.id);
+                        }
+                    );
                 }
             }
         );
@@ -96,10 +113,47 @@ const Render = {
 
     renderTodos() {
         const todosContainer = document.getElementById('todos-container');
-        todosContainer.innerHTML = '';
-        const activeProject = this.projects.find(p => p.id === this.activeProjectId);
+        const currentProjectTitle = document.getElementById('current-project-title');
         
+        // Clear containers
+        todosContainer.innerHTML = '';
+        currentProjectTitle.textContent = this.activeProjectId ? 
+            this.projects.find(p => p.id === this.activeProjectId).name : 
+            'Welcome';
+
+        // Show empty state if no projects
+        if (this.projects.length === 0) {
+            todosContainer.innerHTML = `
+                <div class="empty-state animate-fade-in">
+                    <h3>Welcome to Your Todo List!</h3>
+                    <p>To add a todo list, first create a project from the sidebar.</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Show project selection message if no project is selected
+        if (!this.activeProjectId) {
+            todosContainer.innerHTML = `
+                <div class="empty-state animate-fade-in">
+                    <p>Select a project from the sidebar to view or add todos.</p>
+                </div>
+            `;
+            return;
+        }
+
+        const activeProject = this.projects.find(p => p.id === this.activeProjectId);
         if (!activeProject) return;
+
+        // Show empty project state
+        if (activeProject.getTodos().length === 0) {
+            todosContainer.innerHTML = `
+                <div class="empty-state animate-fade-in">
+                    <p>This project is empty. Click the "New Todo" button to add your first todo!</p>
+                </div>
+            `;
+            return;
+        }
 
         const fragment = document.createDocumentFragment();
         activeProject.getTodos().forEach(todo => {
@@ -126,10 +180,14 @@ const Render = {
                 },
                 // Delete handler
                 (todo) => {
-                    if (confirm('Are you sure you want to delete this todo?')) {
-                        activeProject.removeTodo(todo.id);
-                        this.saveAndRender();
-                    }
+                    Modal.showConfirm(
+                        'Delete Todo',
+                        'Are you sure you want to delete this todo?',
+                        () => {
+                            activeProject.removeTodo(todo.id);
+                            this.saveAndRender();
+                        }
+                    );
                 }
             );
 
@@ -145,6 +203,7 @@ const Render = {
         if (project) {
             project.addTodo(todo);
             this.saveAndRender();
+            Modal.showToast('Todo added successfully!', 'success');
         }
     },
 
@@ -152,14 +211,16 @@ const Render = {
         this.projects.push(project);
         this.activeProjectId = project.id;
         this.saveAndRender();
+        Modal.showToast('Project created successfully!', 'success');
     },
 
     deleteProject(projectId) {
         this.projects = this.projects.filter(p => p.id !== projectId);
         if (this.activeProjectId === projectId) {
-            this.activeProjectId = 'inbox';
+            this.activeProjectId = this.projects.length > 0 ? this.projects[0].id : null;
         }
         this.saveAndRender();
+        Modal.showToast('Project deleted successfully!', 'success');
     },
 
     saveAndRender() {

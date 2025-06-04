@@ -4,11 +4,17 @@ const Modal = {
     modalBody: null,
     isOpen: false,
     onSubmit: null,
+    toastTimeout: null,
 
     init() {
         this.modal = document.getElementById('modal');
         this.modalTitle = document.getElementById('modal-title');
         this.modalBody = document.getElementById('modal-body');
+
+        // Create toast container
+        const toastContainer = document.createElement('div');
+        toastContainer.id = 'toast-container';
+        document.body.appendChild(toastContainer);
 
         // Close button event
         document.getElementById('close-modal').addEventListener('click', () => this.close());
@@ -21,6 +27,57 @@ const Modal = {
         // Escape key to close
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.isOpen) this.close();
+        });
+    },
+
+    showToast(message, type = 'info') {
+        const toastContainer = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type} animate-slide-right`;
+        toast.textContent = message;
+
+        // Remove existing toasts
+        if (this.toastTimeout) {
+            clearTimeout(this.toastTimeout);
+        }
+        toastContainer.innerHTML = '';
+        
+        toastContainer.appendChild(toast);
+
+        // Auto remove after 3 seconds
+        this.toastTimeout = setTimeout(() => {
+            toast.classList.add('toast-hide');
+            setTimeout(() => {
+                if (toastContainer.contains(toast)) {
+                    toastContainer.removeChild(toast);
+                }
+            }, 300);
+        }, 3000);
+    },
+
+    showConfirm(title, message, onConfirm) {
+        const content = `
+            <div class="confirm-dialog">
+                <p>${message}</p>
+                <div class="confirm-actions">
+                    <button class="secondary-btn" id="cancel-btn">Cancel</button>
+                    <button class="primary-btn" id="confirm-btn">Confirm</button>
+                </div>
+            </div>
+        `;
+
+        this.open(title, content);
+
+        const confirmBtn = this.modalBody.querySelector('#confirm-btn');
+        const cancelBtn = this.modalBody.querySelector('#cancel-btn');
+
+        confirmBtn.addEventListener('click', () => {
+            onConfirm();
+            this.close();
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            this.close();
         });
     },
 

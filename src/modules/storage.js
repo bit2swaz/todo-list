@@ -1,5 +1,5 @@
 import TodoFactory from './todo';
-import { ProjectFactory, createDefaultProject } from './project';
+import { ProjectFactory } from './project';
 
 const STORAGE_KEY = 'todoApp';
 
@@ -19,7 +19,7 @@ const Storage = {
         try {
             const data = localStorage.getItem(STORAGE_KEY);
             if (!data) {
-                return [createDefaultProject()];
+                return [];
             }
 
             return JSON.parse(data).map(projectData => {
@@ -54,7 +54,7 @@ const Storage = {
             });
         } catch (error) {
             console.error('Error loading from localStorage:', error);
-            return [createDefaultProject()];
+            return [];
         }
     },
 

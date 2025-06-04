@@ -11,8 +11,10 @@
     display: grid;
     grid-template-columns: auto 1fr auto;
     gap: var(--spacing-md);
-    align-items: center;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    align-items: flex-start;
+    transition: transform var(--transition-fast), 
+                box-shadow var(--transition-fast),
+                background-color var(--transition-fast);
     cursor: pointer;
     position: relative;
     overflow: hidden;
@@ -21,6 +23,7 @@
 .todo-item:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
+    background-color: color-mix(in srgb, var(--bg-secondary) 95%, var(--accent-primary));
 }
 
 .todo-item::before {
@@ -31,7 +34,7 @@
     bottom: 0;
     width: 4px;
     background-color: var(--priority-low);
-    transition: background-color 0.2s ease;
+    transition: background-color var(--transition-fast);
 }
 
 .todo-item[data-priority="medium"]::before {
@@ -49,8 +52,9 @@
     border: 2px solid var(--text-secondary);
     border-radius: 50%;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-fast);
     position: relative;
+    margin-top: 4px;
 }
 
 .todo-checkbox:checked {
@@ -72,11 +76,16 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-xs);
+    min-width: 0;
 }
 
 .todo-title {
     font-weight: 500;
     color: var(--text-primary);
+    transition: color var(--transition-fast), text-decoration var(--transition-fast);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .todo-item.completed .todo-title {
@@ -95,6 +104,7 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-xs);
+    transition: color var(--transition-fast);
 }
 
 .todo-date.overdue {
@@ -104,6 +114,12 @@
 .todo-actions {
     display: flex;
     gap: var(--spacing-sm);
+    opacity: 0.5;
+    transition: opacity var(--transition-fast);
+}
+
+.todo-item:hover .todo-actions {
+    opacity: 1;
 }
 
 .todo-action-btn {
@@ -113,7 +129,10 @@
     cursor: pointer;
     padding: var(--spacing-xs);
     border-radius: 4px;
-    transition: all 0.2s ease;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .todo-action-btn:hover {
@@ -121,21 +140,86 @@
     background-color: var(--bg-tertiary);
 }
 
-/* Todo item expand/collapse animation */
-.todo-item .todo-description {
-    display: none;
+.todo-action-btn.delete-btn:hover {
+    color: var(--error);
+}
+
+/* Todo description and checklist */
+.todo-description {
     grid-column: 1 / -1;
     padding-top: var(--spacing-md);
     color: var(--text-secondary);
     border-top: 1px solid var(--bg-tertiary);
     margin-top: var(--spacing-md);
+    animation: slideDown var(--transition-normal);
 }
 
-.todo-item.expanded .todo-description {
-    display: block;
-    animation: slideDown 0.3s ease;
+.todo-description p {
+    margin-bottom: var(--spacing-md);
+    line-height: 1.6;
 }
 
+.todo-notes {
+    font-style: italic;
+    opacity: 0.8;
+}
+
+/* Checklist styles */
+.todo-checklist {
+    margin-top: var(--spacing-md);
+}
+
+.todo-checklist h4 {
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.todo-checklist ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.todo-checklist li {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xs) 0;
+    transition: opacity var(--transition-fast);
+}
+
+.todo-checklist li.completed span {
+    text-decoration: line-through;
+    color: var(--text-secondary);
+}
+
+.todo-checklist input[type="checkbox"] {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--text-secondary);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.todo-checklist input[type="checkbox"]:checked {
+    background-color: var(--accent-primary);
+    border-color: var(--accent-primary);
+}
+
+.todo-checklist input[type="checkbox"]:checked::after {
+    content: "✓";
+    position: absolute;
+    color: var(--bg-primary);
+    font-size: 10px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Animations */
 @keyframes slideDown {
     from {
         opacity: 0;
